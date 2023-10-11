@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Películas</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <!-- Card para agregar película -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Agregar Película</h5>
+                    <form id="movieForm">
+                        <div class="form-group">
+                            <label for="movieTitle">Título:</label>
+                            <input type="text" class="form-control" id="movieTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="movieYear">Año de lanzamiento:</label>
+                            <input type="number" class="form-control" id="movieYear" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="movieGenre">Género:</label>
+                            <input type="text" class="form-control" id="movieGenre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="movieDirector">Director:</label>
+                            <input type="text" class="form-control" id="movieDirector" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Agregar Película</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card para listar películas -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Listado de Películas</h5>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Año de lanzamiento</th>
+                            <th>Género</th>
+                            <th>Director</th>
+                        </tr>
+                        </thead>
+                        <tbody id="movieList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const movieForm = document.getElementById('movieForm');
+    const movieList = document.getElementById('movieList');
+
+    movieForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const movieTitle = document.getElementById('movieTitle').value;
+        const movieYear = parseInt(document.getElementById('movieYear').value);
+        const movieGenre = document.getElementById('movieGenre').value;
+        const movieDirector = document.getElementById('movieDirector').value;
+        addMovie(movieTitle, movieYear, movieGenre, movieDirector);
+    });
+
+    async function addMovie(title, release_year, genre, director) {
+        const response = await fetch('http://movie-manager-env.eba-mxrccxqd.us-east-1.elasticbeanstalk.com/movies', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title, release_year, genre, director })
+        });
+        const movie = await response.json();
+        const row = document.createElement('tr');
+        row.innerHTML = `
+                <td>${movie.title}</td>
+                <td>${movie.release_year}</td>
+                <td>${movie.genre}</td>
+                <td>${movie.director}</td>
+            `;
+        movieList.appendChild(row);
+    }
+
+    async function loadMovies() {
+        const response = await fetch('http://movie-manager-env.eba-mxrccxqd.us-east-1.elasticbeanstalk.com/movies');
+        const movies = await response.json();
+        movies.forEach((movie) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                    <td>${movie.title}</td>
+                    <td>${movie.release_year}</td>
+                    <td>${movie.genre}</td>
+                    <td>${movie.director}</td>
+                `;
+            movieList.appendChild(row);
+        });
+    }
+
+    loadMovies();
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
