@@ -80,13 +80,13 @@
             },
             body: JSON.stringify({ title, release_year, genre, director })
         });
-        const movie = await response.json();
+        await response.json();
         const row = document.createElement('tr');
         row.innerHTML = `
-                <td>${movie.title}</td>
-                <td>${movie.release_year}</td>
-                <td>${movie.genre}</td>
-                <td>${movie.director}</td>
+                <td>${title}</td>
+                <td>${release_year}</td>
+                <td>${genre}</td>
+                <td>${director}</td>
             `;
         movieList.appendChild(row);
     }
